@@ -18,7 +18,6 @@ model = get_model(2, model_path + 'im3vx6dd_generator.keras')
 app = FastAPI()
 
 # add cors
-
 origins = [
     "http://localhost",
     "http://localhost:2000",
@@ -33,8 +32,7 @@ app.add_middleware(
 )
 
 # image generator call
-@app.get("/generate/{image_name}")
-async def generate_image(image_name: str):
+def generate_image(image_name: str):
     # load image
     image = load_image(input_path + image_name)
 
@@ -51,9 +49,6 @@ async def generate_image(image_name: str):
     # save the generated image
     save_image(gen_image, gen_path + image_name)
 
-    # return url to generated image
-    return {"image_path": f"fokakefir.go.ro/generated/{image_name}"}
-
 # file uploader
 @app.post('/upload/')
 async def upload_file(file: UploadFile = File(...)):
@@ -66,3 +61,26 @@ async def upload_file(file: UploadFile = File(...)):
         fout.write(contents)
 
     return {'filename': file.filename}  
+
+# file uploader and generator
+@app.post('/upload_and_generate/')
+async def upload_file_and_generate_image(file: UploadFile = File(...)):
+
+    file.filename = f'{uuid.uuid4()}.jpg'
+    contents = await file.read()
+
+    # save the file
+    with open(f'{input_path}{file.filename}', 'wb') as fout:
+        fout.write(contents)
+    
+    # generate image
+    generate_image(file.filename)
+
+    return {'filename': file.filename}  
+
+
+# return generated image
+@app.get('/generated_image/{image_name}')
+async def get_generated_image(image_name: str):
+    path = gen_path + image_name
+    return FileResponse(path)
