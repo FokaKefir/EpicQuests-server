@@ -1,5 +1,5 @@
 import tensorflow as tf
-from models import Generator, Generator2
+from models import Generator, Generator2, Generator3
 
 IMG_HEIGHT = 256
 IMG_WIDTH = 256
@@ -45,5 +45,8 @@ def get_model(model_type, path):
         model = Generator()
     elif model_type == 2:
         model = Generator2()
+    elif model_type == 3:
+        model = Generator3()
+        IMG_HEIGHT, IMG_WIDTH = 512, 512
     model.load_weights(path)
     return model

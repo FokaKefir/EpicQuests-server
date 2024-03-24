@@ -12,15 +12,15 @@ gen_path = os.getcwd() + '/data/generated/'
 model_path = os.getcwd() + '/models/'
 
 # import model
-model = get_model(2, model_path + 'im3vx6dd_generator.keras')
+model_name = 'b1jpd0lv_generator.keras'
+model = get_model(2, model_path + model_name)
 
 # create app
 app = FastAPI()
 
 # add cors
 origins = [
-    "http://localhost",
-    "http://localhost:2000",
+    "*"
 ]
 
 app.add_middleware(
