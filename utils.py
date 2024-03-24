@@ -1,5 +1,6 @@
 import tensorflow as tf
 from models import Generator, Generator2, Generator3
+import cv2
 
 IMG_HEIGHT = 256
 IMG_WIDTH = 256
@@ -31,14 +32,12 @@ def save_image(image, path):
     # [-1, 1] -> [0, 256]
     image = (image + 1) * 127.5
 
-    # convert image back to uint8 
-    image = tf.cast(image, tf.uint8)
+    # filter noise
+    median = cv2.medianBlur(image.numpy(), 3)
 
-    # encode image to jpg
-    image = tf.io.encode_jpeg(image)
-    
-    # write file
-    tf.io.write_file(path, image)
+    # save image
+    cv2.imwrite(path, cv2.cvtColor(median, cv2.COLOR_RGB2BGR))
+
 
 def get_model(model_type, path):
     if model_type == 1:
